@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>ホーム | 映画検索アプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <div class="poster-background">
+
+        <div class="poster-row row1">
+            {% for movie in background_movies[:10] %}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+
+            {% for movie in background_movies[:10] %}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="poster-row row2">
+            {% for movie in background_movies[10:20]%}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+
+            {% for movie in background_movies[10:20] %}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+        </div>
+
+        <div class="poster-row row3">
+            {% for movie in background_movies[20:30] %}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+
+            {% for movie in background_movies[20:30] %}
+            {% if movie.poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ movie.poster_path }}">
+            {% endif %}
+            {% endfor %}
+        </div>
+
+    </div>
+
+    <nav class="nav-menu">
+        <a href="/">ホーム</a>
+        <a href="/search">映画検索</a>
+        <a href="/favorites">マイリスト</a>
+    </nav>
+
+    <h1>ホーム</h1>
+
+    <section class="home-section">
+        <form action="/search" method="get" class="search-box">
+            <input type="text" name="keyword" placeholder="映画タイトルを入力" required autofocus>
+            <button type="submit">検索</button>
+        </form>
+
+        <div class="section-header">
+            <h2>マイリスト</h2>
+            <a href="/favorites">もっと見る</a>
+        </div>
+
+        <div class="thumbnail-row">
+            {% for movie_id, title, poster_path in favorite_movies %}
+            <a href="/movie/{{ movie_id }}/edit">
+                {% if poster_path %}
+                <img src="https://image.tmdb.org/t/p/w200{{ poster_path }}" alt="{{ title }}">
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section class="home-section">
+
+        <div class="section-header">
+            <h2>レビュー済み</h2>
+            <a href="/reviews">もっと見る</a>
+        </div>
+
+        <div class="thumbnail-row">
+            {% for movie_id, title, poster_path in review_movies %}
+            <a href="/movie/{{ movie_id }}/edit">
+                {% if poster_path %}
+                <img src="https://image.tmdb.org/t/p/w200{{ poster_path }}" alt="{{ title }}">
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+    </section>
+
+</body>
+
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <title>マイリスト | 映画検索アプリ</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <nav class="nav-menu">
+        <a href="/">ホーム</a>
+        <a href="/search">映画検索</a>
+        <a href="/favorites">マイリスト</a>
+    </nav>
+    <div class="page-header">
+        <h1>お気に入り一覧</h1>
+        {% if edit_mode %}
+        <a href="/favorites" class="edit-button">完了</a>
+        {% else %}
+        <a href="/favorites/edit" class="edit-button">削除</a>
+        {% endif %}
+    </div>
+
+    {% if movies %}
+
+    <form action="/delete_selected" method="post">
+        {% for movie_id, title, release_date,poster_path, watched, rating, memo in movies %}
+
+        <div class="movie-card" ondblclick="location.href='/movie/{{ movie_id }}/edit'">
+
+            {% if edit_mode %}
+            <input type="checkbox" name="selected_movies" value="{{ movie_id }}">
+            {% endif %}
+
+            {% if poster_path %}
+            <img src="https://image.tmdb.org/t/p/w300{{ poster_path }}">
+            {% endif %}
+
+            <div>
+                <h2>{{ title }}</h2>
+
+                <p>公開日: {{ release_date }}</p>
+
+                <p>
+                    {% if watched %}
+                    視聴済み
+                    {% else %}
+                    未視聴
+                    {% endif %}
+                </p>
+
+                <p>
+                    {% if rating %}
+                    {{ "★" * rating }}
+                    {% else %}
+                    未評価
+                    {% endif %}
+                </p>
+
+                <p>{{ memo }}</p>
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+        {% if edit_mode %}
+        <button type="submit">
+            選択した映画を削除
+        </button>
+        {% endif %}
+
+    </form>
+
+    {% else %}
+    <p>お気に入りはまだ登録されていません。</p>
+
+    {% endif%}
+
+
+</body>
+
+</html>
