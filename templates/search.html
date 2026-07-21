@@ -20,6 +20,7 @@
     </form>
 
 
+    <!-- TMDBから返された各作品を、保存フォームとともに表示する。 -->
     {% for movie in movies %}
     <div class="movie-card">
 
@@ -33,6 +34,7 @@
             <p>{{ movie.overview }}</p>
         </div>
 
+        <!-- 画面に表示した映画情報をPOSTし、マイリストへ登録する。 -->
         <form action="/save" method="post">
 
             <input type="hidden" name="keyword" value="{{ keyword}}">

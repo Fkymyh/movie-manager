@@ -10,6 +10,7 @@ h1 {
     color: #e50914
 }
 
+/* 検索結果・マイリスト・編集画面で共通利用する映画カード。 */
 .movie-card {
     display: flex;
     gap: 20px;
@@ -58,14 +59,6 @@ input[type="text"]::placeholder {
     color: #cccccc;
 }
 
-
-.poster-background {
-    position: fixed;
-    inset: 0;
-    overflow: hidden;
-    opacity: 0.1;
-    z-index: -1;
-}
 
 nav {
     display: flex;
@@ -151,6 +144,7 @@ select {
     transform: scale(1.05);
 }
 
+/* ホーム画面の背面で人気映画ポスターを横方向に流す領域。 */
 .poster-background {
     position: fixed;
     inset: 0;
@@ -189,6 +183,7 @@ select {
     animation: scroll-left 90s linear infinite;
 }
 
+/* 行ごとに逆方向へ動かし、背景に奥行きを持たせる。 */
 @keyframes scroll-left {
     from {
         transform: translateX(0);

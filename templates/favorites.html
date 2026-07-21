@@ -15,7 +15,7 @@
         <a href="/favorites">マイリスト</a>
     </nav>
     <div class="page-header">
-        <h1>お気に入り一覧</h1>
+        <h1>{{ page_title|default("お気に入り一覧") }}</h1>
         {% if edit_mode %}
         <a href="/favorites" class="edit-button">完了</a>
         {% else %}
@@ -25,6 +25,7 @@
 
     {% if movies %}
 
+    <!-- 編集モードではチェックした映画IDをまとめて削除できる。 -->
     <form action="/delete_selected" method="post">
         {% for movie_id, title, release_date,poster_path, watched, rating, memo in movies %}
 

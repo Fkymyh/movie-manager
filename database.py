@@ -1,13 +1,16 @@
 import sqlite3
 import csv
+from pathlib import Path
 
-DB_NAME = "movies.db"
+# 起動場所に左右されず、常にこのソースと同じフォルダのDBを使用する。
+DB_NAME = str(Path(__file__).resolve().with_name("movies.db"))
 
 # ============================
 # DB接続のヘルパー
 # ============================
 
 def get_connection():
+    """行を列名でも参照できる設定でSQLite接続を返す。"""
     conn = sqlite3.connect(DB_NAME)
     conn.row_factory = sqlite3.Row
     return conn
@@ -19,6 +22,7 @@ def get_connection():
 # ============================
 
 def create_table():
+    """映画のお気に入りと検索履歴を保存するテーブルを初回だけ作成する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -52,6 +56,7 @@ def create_table():
 # ============================
 
 def save_movie(movie, watched, rating, memo):
+    """TMDBの映画IDを主キーとして映画を保存する。登録済みの場合は変更しない。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -78,9 +83,11 @@ def save_movie(movie, watched, rating, memo):
 # ============================
 
 def get_movies(sort_by="title", watched_filter=None):
+    """保存済み映画を、任意の並び順と視聴状態の条件で取得する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
+    # SQL断片は固定の辞書からだけ選び、利用者の入力を直接SQLへ埋め込まない。
     order_by = {
         "title": "title ASC",
         "release_date": "release_date DESC",
@@ -115,6 +122,7 @@ def get_movies(sort_by="title", watched_filter=None):
 # ============================
 
 def delete_movie(movie_id):
+    """指定された映画IDのレコードを削除する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -132,6 +140,7 @@ def delete_movie(movie_id):
 # ============================
 
 def update_movie(movie_id, watched, rating, memo):
+    """指定された映画の視聴状態、評価、感想を更新する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -144,8 +153,8 @@ def update_movie(movie_id, watched, rating, memo):
     conn.commit()
     conn.close()
 
-    #検索履歴を保存する関数
 def save_search_history(keyword):
+    """検索キーワードを検索日時とともに履歴へ追加する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -157,8 +166,8 @@ def save_search_history(keyword):
     conn.commit()
     conn.close()
 
-    #検索履歴を取得する関数
 def get_search_history(limit=10):
+    """新しい順に、指定件数まで検索履歴を取得する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -176,6 +185,7 @@ def get_search_history(limit=10):
     return history
 
 def export_movies_to_csv(filename="favorites.csv"):
+    """保存済み映画をExcelでも開きやすいUTF-8（BOM付き）のCSVへ出力する。"""
     movies = get_movies()
 
     with open(filename, "w", newline="", encoding="utf-8-sig") as file:
@@ -199,6 +209,7 @@ def export_movies_to_csv(filename="favorites.csv"):
             ])
 
 def get_movie(movie_id):
+    """編集画面で使う映画1件をIDで取得する。存在しなければNoneを返す。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -216,6 +227,7 @@ def get_movie(movie_id):
     return movie
 
 def get_favorite_movies(limit=6):
+    """ホーム画面用に、最近登録されたお気に入りを指定件数だけ取得する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -235,6 +247,7 @@ def get_favorite_movies(limit=6):
 
 
 def get_review_movies(limit=6):
+    """ホーム画面用に、感想または評価がある映画を指定件数だけ取得する。"""
     conn = get_connection()
     cursor = conn.cursor()
 
@@ -250,4 +263,22 @@ def get_review_movies(limit=6):
 
     conn.close()
 
+    return movies
+
+
+def get_reviews():
+    """評価または感想がある映画を、レビュー一覧画面用の全項目で取得する。"""
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT movie_id, title, release_date, poster_path,
+               watched, rating, memo
+        FROM favorites
+        WHERE COALESCE(memo, '') != '' OR COALESCE(rating, 0) > 0
+        ORDER BY movie_id DESC
+    """)
+
+    movies = cursor.fetchall()
+    conn.close()
     return movies

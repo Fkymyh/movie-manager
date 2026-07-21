@@ -8,6 +8,7 @@ from database import (create_table, save_movie, get_movies, delete_movie,
 # ============================
 
 def get_int_input(message, min_value, max_value):
+    """指定された範囲内の整数が入力されるまで、ユーザーに再入力を求める。"""
     while True:
         try:
             value = int(input(message))
@@ -18,6 +19,7 @@ def get_int_input(message, min_value, max_value):
             print("数字を入力してください。")
 
 def get_yes_no_input(message):
+    """y または n のどちらかが入力されるまで、ユーザーに再入力を求める。"""
     while True:
         value = input(message).strip().lower()
         if value in ["y", "n"]:
@@ -25,6 +27,7 @@ def get_yes_no_input(message):
         print("y または n を入力してください。")
 
 def get_text_input(message):
+    """空白だけではない文字列が入力されるまで、ユーザーに再入力を求める。"""
     while True:
         value = input(message).strip()
         if value:
@@ -37,6 +40,7 @@ def get_text_input(message):
 # ============================
 
 def show_menu():
+    """CLI版で利用できる操作メニューを表示する。"""
     print("\n=== 映画管理アプリ ===")
     print("1. 映画を検索して保存")
     print("2. お気に入り一覧を表示")
@@ -52,6 +56,7 @@ def show_menu():
 # ============================
 
 def show_favorites(sort_by="title", watched_filter=None):
+    """保存済み映画を指定順で取得し、CLI向けに整形して表示する。"""
     favorites = get_movies(sort_by, watched_filter)
 
     if not favorites:
@@ -60,7 +65,8 @@ def show_favorites(sort_by="title", watched_filter=None):
 
     print("\n=== お気に入り一覧 ===")
 
-    for i, (movie_id, title, release_date, watched, rating, memo) in enumerate(favorites, start=1):
+    # get_movies()はWeb画面でも使うposter_pathを含む7項目を返す。
+    for i, (movie_id, title, release_date, _poster_path, watched, rating, memo) in enumerate(favorites, start=1):
         status = "視聴済み" if watched else "未視聴"
         stars = "★" * rating if rating else "未評価"
 
@@ -79,6 +85,7 @@ def show_favorites(sort_by="title", watched_filter=None):
 # ============================
 
 def main():
+    """テーブルを準備し、終了が選択されるまでCLIメニューを処理する。"""
     create_table()
 
     while True:
